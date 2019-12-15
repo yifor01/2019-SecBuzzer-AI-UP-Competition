@@ -1,7 +1,13 @@
-# SecBuzzer-AI-UP-Competition
+# 2019 SecBuzzer AI UP! Competition
 
 # Goal
 * Use malware bytes data to classify its group.
+* Data: 5907 training data, 5000 test data
+* Target: Backdoor、PUA、PWS、Ransom、SoftwareBundler、Trojan、TrojanDownloader、VirTool、Virus、Worm 
+
+# Dataset
+* [Train Data](https://storage.googleapis.com/sec-static/competition/dataset/malware/train.zip)
+* [Test Data]((https://storage.googleapis.com/sec-static/competition/dataset/malware/test.zip))
 
 # Reference
 * [Malware Classification using Machine Learning](https://towardsdatascience.com/malware-classification-using-machine-learning-7c648fb1da79)
