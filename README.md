@@ -1,5 +1,8 @@
 # SecBuzzer-AI-UP-Competition
 
+# Goal
+* Use malware bytes data to classify its group.
+
 # Reference
 * [Malware Classification using Machine Learning](https://towardsdatascience.com/malware-classification-using-machine-learning-7c648fb1da79)
 * [Microsoft Malware Data](https://github.com/melanieihuei/Malware-Classification)
