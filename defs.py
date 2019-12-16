@@ -3,7 +3,6 @@ import numpy as np
 import math
 PATH = "D:/jobs/DL_practice/AIUP"
 
-
 def process(x): 
     if "." in x:
         res = x.split(".")[0].zfill(2) 
@@ -51,7 +50,6 @@ def ngram(md5,mode,M1=1024,M2=100000,M =3):
     tmp = tmp[~pd.isnull(tmp)].astype('str')
     end = start + len(tmp)
     T1,T2 = max(M1,start),min(M2,end)    
-    
     tmp = np.array([process(x) for x in tmp[(T1-start):(T2-start) ] ])
     ans = np.zeros(M2)
     ans[T1:T2] = tmp
@@ -74,11 +72,14 @@ def ngram_stat(md5,mode='train',M=2):
     n = len(tmp)
     cutsize = int(n/M)
     nums = {}
+    count0 = 0 
     for i in range(cutsize):
         for k in range(M):
+            if '.' in tmp[i*M+k]:
+                tmp[i*M+k] = tmp[i*M+k].split(".")[0].zfill(3) 
+                count0+=1
             if len(tmp[i*M+k])<3:
                 tmp[i*M+k] = '0'*(3-len(tmp[i*M+k])) +tmp[i*M+k]
-        
         if ''.join(tmp[(i*M):(i*M+M)]) in nums:
             nums[''.join(tmp[(i*M):(i*M+M)])]+=1
         else:
@@ -93,12 +94,8 @@ def ngram_stat(md5,mode='train',M=2):
         else:
             output[i] = 0
     output = output/n
+    output = np.concatenate([output,[count0]],axis=0)
     return output
-
-
-
-
-
 
 
 def GetDRdata(md5,M1=512,M2=18000000,mode='train',M=10000,DR_med='mean'):
@@ -145,10 +142,6 @@ def GetDRdata(md5,M1=512,M2=18000000,mode='train',M=10000,DR_med='mean'):
                 elif DR_med == 'std':
                     result[i] = ans[(i*cutsize):(i*cutsize+cutsize)].std()
             return result
-
-
-
-
 
 
 # old code
