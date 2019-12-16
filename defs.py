@@ -42,7 +42,6 @@ def checkstat(md5,mode='train'):
     output = np.concatenate([output,[n,start,end]],axis=0)
     return output
 
-
 def ngram(md5,mode,M1=1024,M2=100000,M =3):
     tmp = pd.read_table(f"{PATH}/{mode}/{md5}.bytes", sep=' ',header=None,index_col=0)
     start = int(tmp.index[0][:-1],16)
@@ -63,7 +62,7 @@ def ngram(md5,mode,M1=1024,M2=100000,M =3):
         result[i] = add_num
     return result
 
-
+#from tqdm import tqdm
 def ngram_stat(md5,mode='train',M=2):
     tmp = pd.read_table(f"{PATH}/{mode}/{md5}.bytes", sep=' ',header=None,index_col=0)
     start = int(tmp.index[0][:-1],16)
@@ -76,27 +75,20 @@ def ngram_stat(md5,mode='train',M=2):
     for i in range(cutsize):
         for k in range(M):
             if '.' in tmp[i*M+k]:
-                tmp[i*M+k] = tmp[i*M+k].split(".")[0].zfill(3) 
+                tmp[i*M+k] = tmp[i*M+k].split(".")[0].zfill(2) 
                 count0+=1
-            if len(tmp[i*M+k])<3:
-                tmp[i*M+k] = '0'*(3-len(tmp[i*M+k])) +tmp[i*M+k]
+            if len(tmp[i*M+k])==1:
+                tmp[i*M+k] = '0'+tmp[i*M+k]
         if ''.join(tmp[(i*M):(i*M+M)]) in nums:
-            nums[''.join(tmp[(i*M):(i*M+M)])]+=1
+            nums[process(''.join(tmp[(i*M):(i*M+M)]))]+=1
         else:
-            nums[''.join(tmp[(i*M):(i*M+M)])]=1
-    new_nums = {}
-    for string in nums.keys():
-        new_nums[process(string)] = nums[string]
+            nums[process(''.join(tmp[(i*M):(i*M+M)]))]=1
     output = np.zeros(256**M)
-    for i in range(256**M):
-        if i in new_nums.keys():
-            output[i] = new_nums[i]
-        else:
-            output[i] = 0
+    for i in nums.keys():
+        output[i] = nums[i]
     output = output/n
     output = np.concatenate([output,[count0]],axis=0)
     return output
-
 
 def GetDRdata(md5,M1=512,M2=18000000,mode='train',M=10000,DR_med='mean'):
     """ Get dimensional reduction redult.
