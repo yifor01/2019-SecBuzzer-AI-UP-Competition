@@ -76,7 +76,7 @@ def lgb_eval(num_leaves, feature_fraction, bagging_fraction, max_depth,
     params['min_child_weight'] = min_child_weight
     cv_result = lgb.cv(params, train_data, nfold=n_folds, seed=random_seed, 
                        stratified=True)
-    return min(cv_result['multi_logloss-mean'])
+    return -min(cv_result['multi_logloss-mean'])
 
 lgbBO = BayesianOptimization(lgb_eval, {'num_leaves': (24, 45),
                                         'feature_fraction': (0.1, 0.9),
@@ -86,7 +86,10 @@ lgbBO = BayesianOptimization(lgb_eval, {'num_leaves': (24, 45),
                                         'lambda_l2': (0, 3),
                                         'min_split_gain': (0.001, 0.1),
                                         'min_child_weight': (5, 50)}, random_state=0)
+logging.info('Bayesian Optimzation Start')
 lgbBO.maximize(init_points=3, n_iter=10)
+logging.info('Bayesian Optimzation End')
+
 lgbBO.res['max']['max_params']
 
 
