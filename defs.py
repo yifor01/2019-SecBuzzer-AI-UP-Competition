@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import math
+from scipy import sparse
+from tqdm import tqdm
 PATH = "D:/jobs/DL_practice/AIUP"
 
 def process(x): 
@@ -90,6 +92,15 @@ def ngram_stat(md5,mode='train',M=2):
     output = np.concatenate([output,[count0]],axis=0)
     return output
 
+def Reduce2std(data,reduce_size):
+    size1,size2 = data.shape
+    output = np.zeros([size1,reduce_size])
+    dcut = int(size2/reduce_size)
+    for i in tqdm(range(reduce_size)):
+        output[:,i] = data[:,i*dcut:i*dcut+dcut].toarray().std(axis=1)
+    output = sparse.csr_matrix(output)
+    return output
+
 def GetDRdata(md5,M1=512,M2=18000000,mode='train',M=10000,DR_med='mean'):
     """ Get dimensional reduction redult.
     
@@ -134,48 +145,4 @@ def GetDRdata(md5,M1=512,M2=18000000,mode='train',M=10000,DR_med='mean'):
                 elif DR_med == 'std':
                     result[i] = ans[(i*cutsize):(i*cutsize+cutsize)].std()
             return result
-
-
-# old code
-'''
-def getdata(md5):
-    tmp = pd.read_table(f"{PATH}/train/{md5}.bytes", sep=' ',header=None,index_col=0)
-    var = int(tmp.index[0][:-1],16)
-    tmp = np.array(tmp).reshape([1,tmp.shape[0]*tmp.shape[1]])
-    tmp = tmp[~pd.isnull(tmp)].astype('str')
-    tmp = np.array([process(x) for x in tmp ])
-    return tmp,var
-
-
-
-def getXtrain(md5,M1=0,M2=100000):
-    assert M2>M1
-    tmp = pd.read_table(f"train/{md5}.bytes", sep=' ',header=None,index_col=0)
-    start = int(tmp.index[0][:-1],16)
-    output = np.zeros(M2-M1)
-    tmp = np.array(tmp).reshape([1,tmp.shape[0]*tmp.shape[1]])
-    tmp = tmp[~pd.isnull(tmp)].astype('str')
-    end = start + len(tmp)
-    T1,T2 = max(M1,start),min(M2,end)
-    if T1<T2:
-        tmp = np.array([process(x) for x in tmp[(T1-start):(T2-start) ] ])
-        output[(T1-M1):(T2-M1)] = tmp
-    return output
-
-
-
-def getXtest(md5,M1=0,M2=100000):
-    assert M2>M1
-    tmp = pd.read_table(f"test/{md5}.bytes", sep=' ',header=None,index_col=0)
-    start = int(tmp.index[0][:-1],16)
-    output = np.zeros(M2-M1)
-    tmp = np.array(tmp).reshape([1,tmp.shape[0]*tmp.shape[1]])
-    tmp = tmp[~pd.isnull(tmp)].astype('str')
-    end = start + len(tmp)
-    T1,T2 = max(M1,start),min(M2,end)
-    if T1<T2:
-        tmp = np.array([process(x) for x in tmp[(T1-start):(T2-start) ] ])
-        output[(T1-M1):(T2-M1)] = tmp
-    return output
-'''
 
