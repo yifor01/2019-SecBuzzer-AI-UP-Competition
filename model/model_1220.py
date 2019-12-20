@@ -128,7 +128,7 @@ model = LGBMClassifier(learning_rate=0.01,
                       n_jobs=core,
                       seed=666)
 logging.info('Single model fit')
-model.fit(new_train,df.y,verbose=0,early_stopping_rounds=200)
+model.fit(new_train,df.y)
 
 # =============================================================================
 # Submit
@@ -155,7 +155,7 @@ for train_idx, valid_idx in kf.split(new_train,df.y):
     score += model.evals_result_[a][b][-1]/nfolds
     qq = round(model.evals_result_[a][b][-1],5) 
     logging.info(f'mlogloss: {qq}')
-    result += sparse.csr_matrix((model.predict_proba(test)))/nfolds
+    result += sparse.csr_matrix((model.predict_proba(new_test)))/nfolds
     gc.collect()
 logging.info(f'Final mlogloss: {round(score,5)}')
 
