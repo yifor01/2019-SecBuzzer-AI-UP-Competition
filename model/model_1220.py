@@ -96,14 +96,24 @@ logging.info('Bayesian Optimzation Start')
 lgbBO.maximize(init_points=20, n_iter=100)
 logging.info('Bayesian Optimzation End')
 
+logging.info(lgbBO.max)
+
 # =============================================================================
 ### Lightgbm for 1-gram-stat and original-60w-1k-mean-std
-
+{'target': -0.8761335591324919,
+ 'params': {'bagging_fraction': 0.7591234571011538,
+  'feature_fraction': 0.21728530942570307,
+  'lambda_l1': 0.2887853631779851,
+  'lambda_l2': 0.5408532314624948,
+  'max_depth': 12.468673410805737,
+  'min_child_weight': 6.810750529318991,
+  'min_split_gain': 0.007698850162408724,
+  'num_leaves': 59.655888344868444,
+  'subsample_for_bin': 3791.3902052686813}}
 # =============================================================================
 
-logging.info(lgbBO.max['params'])
 model = LGBMClassifier(learning_rate=0.01,
-                      num_iterations=10,
+                      num_iterations=4000,
                       num_class=11,
                       bagging_fraction=lgbBO.max['params']['bagging_fraction'],
                       feature_fraction=lgbBO.max['params']['feature_fraction'],
@@ -118,8 +128,7 @@ model = LGBMClassifier(learning_rate=0.01,
                       n_jobs=core,
                       seed=666)
 logging.info('Single model fit')
-model.fit(new_train,df.y, eval_set=[(new_train,df.y)],verbose=0,early_stopping_rounds=200)
-
+model.fit(new_train,df.y,verbose=0,early_stopping_rounds=200)
 
 # =============================================================================
 # Submit
@@ -129,7 +138,6 @@ submit.iloc[:,1:] = model.predict_proba(new_test)
 submit.iloc[:,1:] = submit.iloc[:,1:].astype('float32')
 submit.sum(axis=1)
 submit.to_csv('submit1_1220.csv',index=False)
-
 
 
 logging.info('Write result 2')
