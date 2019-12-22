@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
-import math
+import math,os
 from scipy import sparse
 from tqdm import tqdm
+
 PATH = "D:/jobs/DL_practice/AIUP"
 
 def process(x): 
@@ -12,6 +13,15 @@ def process(x):
         res = x
     res = int(res,16)
     return res
+
+def process2str(x): 
+    if "." in x:
+        res = x.split(".")[0].zfill(2) 
+    else:
+        res = x
+    if len(x)==0:
+        res = "00"
+    return str(res)
 
 ## for parallel 
 def checkstat(md5,mode='train'):
@@ -52,16 +62,14 @@ def ngram(md5,mode,M1=1024,M2=100000,M =3):
     end = start + len(tmp)
     T1,T2 = max(M1,start),min(M2,end)    
     tmp = np.array([process(x) for x in tmp[(T1-start):(T2-start) ] ])
-    ans = np.zeros(M2)
+    ans = np.zeros(M2,dtype="<U2")
     ans[T1:T2] = tmp
     ans = ans[M1:M2]
     cutsize = int((M2-M1)/M)
-    result = np.zeros(cutsize,dtype='int')
+    result = np.zeros(cutsize,dtype='int64')
     for i in range(cutsize):
-        add_num = 0
-        for idx,num in enumerate(ans[(i*M):(i*M+M)]):
-            add_num +=num*( 10**( (M-idx-1)*M ) )
-        result[i] = add_num
+        gramword = "".join( [process2str(x) for x in ans[(i*M):(i*M+M)] ] )
+        result[i] = int(gramword,16)
     return result
 
 #from tqdm import tqdm
@@ -100,6 +108,19 @@ def Reduce2std(data,reduce_size):
         output[:,i] = data[:,i*dcut:i*dcut+dcut].toarray().std(axis=1)
     output = sparse.csr_matrix(output)
     return output
+
+def getDataSize(md5,data,mode):
+    assert mode in ['train','test']
+    return os.path.getsize(f'{PATH}/{mode}/{md5}.bytes')    
+
+
+# =============================================================================
+# def getSartIndex(md5,data,mode):
+#     assert mode in ['train','test']
+#     tmp = pd.read_table(f"{PATH}/{mode}/{md5}.bytes", sep=' ',header=None,nrows =1)
+#     return int(tmp[0][0][:-1],16)
+# =============================================================================
+
 
 def GetDRdata(md5,M1=512,M2=18000000,mode='train',M=10000,DR_med='mean'):
     """ Get dimensional reduction redult.
@@ -145,4 +166,34 @@ def GetDRdata(md5,M1=512,M2=18000000,mode='train',M=10000,DR_med='mean'):
                 elif DR_med == 'std':
                     result[i] = ans[(i*cutsize):(i*cutsize+cutsize)].std()
             return result
+
+
+
+
+def control_limit(md5,max_seq = 50000,mode='train',thresholds=[0.5,1,1.2,1.5,2]):    
+    tmp = pd.read_table(f"{PATH}/{mode}/{md5}.bytes", sep=' ',header=None,index_col=0)
+    start = int(tmp.index[0][:-1],16)
+    tmp = np.array(tmp).reshape([1,tmp.shape[0]*tmp.shape[1]])[0]
+    tmp = tmp[~pd.isnull(tmp)].astype('str')
+    n = len(tmp)
+    output = np.zeros(max_seq)
+    output[:min(n,max_seq)] = [ process(x) for x in tmp[:min(n,max_seq)] ]
+    stand = (abs(output - output.mean())/output.std())
+    return np.array([(stand>x).mean() for x in thresholds])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
