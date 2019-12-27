@@ -5,6 +5,10 @@
 * Data: 5907 training data, 5000 test data
 * Target: Backdoor、PUA、PWS、Ransom、SoftwareBundler、Trojan、TrojanDownloader、VirTool、Virus、Worm 
 
+## Method
+* Model: LightGBM
+* Skill: Bayesian Optimization, Calibration, Semi-Supervised Learning, Stacking
+
 ## Dataset
 * [Train Data](https://storage.googleapis.com/sec-static/competition/dataset/malware/train.zip)
 * [Test Data](https://storage.googleapis.com/sec-static/competition/dataset/malware/test.zip)
