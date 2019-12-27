@@ -1,4 +1,5 @@
 # 2019 SecBuzzer AI UP! Competition
+![image](https://img.shields.io/badge/python-3.7-blue.svg)
 
 ## Goal
 * Use malware bytes data to classify its group.
