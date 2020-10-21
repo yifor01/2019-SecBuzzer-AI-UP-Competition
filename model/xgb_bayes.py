@@ -102,6 +102,7 @@ X_train, X_test, y_train, y_test = train_test_split(new_train,df.y,test_size=0.1
 
 n_folds,random_seed = 5,666
 
+
 def xgb_eval(gamma,num_leaves, max_depth,min_child_weight,
              colsample_bytree,subsample):
     fit_params={'early_stopping_rounds': 100, 

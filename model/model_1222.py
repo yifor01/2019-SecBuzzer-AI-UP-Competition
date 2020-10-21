@@ -33,7 +33,7 @@ log_filename = datetime.now().strftime("log/tk%Y-%m-%d_%H_%M_%S.log")
 logging.basicConfig(level=logging.INFO, format=' %(asctime)s %(message)s')#,filename=log_filename)
 
 logging.info('Load Data')
-df = pd.read_csv('df.csv')
+df = pd.read_csv('data/df.csv')
 submit = pd.read_csv('ResultSample.csv')
 
 logging.info('Target Variable Tansform')
@@ -47,14 +47,14 @@ core,M1,M2,M = 12,1024,100000,2
 # 1024~62w (172w) test
 
 logging.info('Get data')
-with open(f'train_1gram_stat.pickle','rb') as file:
+with open(f'data/train_1gram_stat.pickle','rb') as file:
     train_stat = pickle.load(file)
-with open(f'test_1gram_stat.pickle','rb') as file:
+with open(f'data/test_1gram_stat.pickle','rb') as file:
     test_stat = pickle.load(file)
 
-with open(f'train_60w_6w_1k.pickle','rb') as file:
+with open(f'data/train_60w_6w_1k.pickle','rb') as file:
     train = pickle.load(file)
-with open(f'test_60w_6w_1k.pickle','rb') as file:
+with open(f'data/test_60w_6w_1k.pickle','rb') as file:
     test = pickle.load(file)
 
 with open(f'train_size.pickle','rb') as file:
